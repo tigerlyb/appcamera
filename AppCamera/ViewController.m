@@ -69,14 +69,15 @@
         UIImage *image = self.imageView.image;
         NSData *dataImage = UIImagePNGRepresentation(image);
         NSString *base64Image = [dataImage base64EncodedStringWithOptions:0];
+        NSArray *imageArray = [NSArray arrayWithObjects:base64Image, nil];;
     
         // create json data format
         NSMutableDictionary *input = [[NSMutableDictionary alloc] init];
-        [input setObject:@"224" forKey:@"width"];
-        [input setObject:@"224" forKey:@"height"];
+        [input setObject:@224 forKey:@"width"];
+        [input setObject:@224 forKey:@"height"];
         
         NSMutableDictionary *output = [[NSMutableDictionary alloc] init];
-        [output setObject:@"3" forKey:@"best"];
+        [output setObject:@3 forKey:@"best"];
         
         NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
         [parameters setObject:input forKey:@"input"];
@@ -85,18 +86,21 @@
         NSMutableDictionary *inputData = [[NSMutableDictionary alloc] init];
         [inputData setObject:@"imageserv" forKey:@"service"];
         [inputData setObject:parameters forKey:@"parameters"];
-        [inputData setObject:base64Image forKey:@"data"];
+        [inputData setObject:imageArray forKey:@"data"];
         
         NSError *error = nil;
         NSData *jsonInputData = [NSJSONSerialization dataWithJSONObject:inputData options:NSJSONWritingPrettyPrinted error:&error];
-        NSString *jsonInputString = [[NSString alloc] initWithData:jsonInputData encoding:NSUTF8StringEncoding];
+        
+        NSString *jsonInputString = [[NSString alloc] initWithData:jsonInputData encoding:NSASCIIStringEncoding];
+        NSString *postLength = [NSString stringWithFormat:@"%d", [jsonInputString length]];
         
         // setup http post
         NSURL *url = [NSURL URLWithString:@"http://willamete.cs.uga.edu:8080/predict"];
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         [request setHTTPMethod:@"POST"];
-        [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPBody:[jsonInputString dataUsingEncoding:NSUTF8StringEncoding]];
+        [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setHTTPBody:[jsonInputString dataUsingEncoding:NSASCIIStringEncoding]];
         
         NSURLResponse *response;
         NSError *err;
@@ -112,7 +116,16 @@
             if (responseError) {
                 NSLog(@"Response Parse Error: %@", responseError);
             } else {
-                NSLog(@"Server Response: %@", jsonResponseData);
+                NSString *responseString = [NSString stringWithFormat:@"%@", jsonResponseData];
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Predictions" message:responseString preferredStyle:UIAlertControllerStyleAlert];
+                
+                UIAlertAction *yesButton = [UIAlertAction actionWithTitle:@"Close" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                    
+                }];
+                
+                [alert addAction:yesButton];
+                [self presentViewController:alert animated:YES completion:nil];
+                //NSLog(@"Server Response: %@", jsonResponseData);
             }
         }
     }
