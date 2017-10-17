@@ -2,7 +2,7 @@
 //  ViewController.h
 //  AppCamera
 //
-//  Created by sisi ye on 10/10/17.
+//  Created by Yibin Liao on 10/10/17.
 //  Copyright © 2017 AppCamera. All rights reserved.
 //
 

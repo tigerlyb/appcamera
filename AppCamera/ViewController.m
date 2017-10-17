@@ -2,7 +2,7 @@
 //  ViewController.m
 //  AppCamera
 //
-//  Created by sisi ye on 10/10/17.
+//  Created by Yibin Liao on 10/10/17.
 //  Copyright © 2017 AppCamera. All rights reserved.
 //
 
@@ -125,7 +125,6 @@
                 
                 [alert addAction:yesButton];
                 [self presentViewController:alert animated:YES completion:nil];
-                //NSLog(@"Server Response: %@", jsonResponseData);
             }
         }
     }
